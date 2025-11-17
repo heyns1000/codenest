@@ -1,0 +1,82 @@
+# Create repos.txt with ALL your ACTUAL repositories from GitHub
+cat > repos.txt << EOF
+https://github.com/heyns1000/faa.zone.git
+https://github.com/heyns1000/seedwave.git
+https://github.com/heyns1000/vaultmesh.git
+https://github.com/heyns1000/samfox.git
+https://github.com/heyns1000/legal.git
+https://github.com/Fruitful-Global-Planet/FruitfulPlanetChange.git
+https://github.com/heyns1000/fruitful.git
+https://github.com/heyns1000/baobab.git
+https://github.com/heyns1000/fruitful.crate.dance.faa.zone.git
+https://github.com/heyns1000/ritual.seedwave.faa.zone.git
+https://github.com/heyns1000/education-ip.seedwave.faa.zone.git
+https://github.com/heyns1000/interns.seedwave.faa.zone.git
+https://github.com/heyns1000/mining.seedwave.faa.zone.git
+https://github.com/heyns1000/noodle.juice.git
+https://github.com/heyns1000/agriculture.seedwave.faa.zone.git
+https://github.com/heyns1000/footer.global.repo.git
+https://github.com/heyns1000/tripot.git
+https://github.com/heyns1000/banimal.git
+https://github.com/heyns1000/payment.git
+https://github.com/heyns1000/hotstack.git
+https://github.com/heyns1000/trade.seedwave.faa.zone.git
+https://github.com/heyns1000/lesotho.faa.zone.git
+https://github.com/heyns1000/ai-logic.seedwave.faa.zone.git
+https://github.com/heyns1000/index.menu.seedwave.faa.zone.git
+https://github.com/heyns1000/adele.git
+https://github.com/heyns1000/payroll.git
+https://github.com/heyns1000/omnigrid.git
+https://github.com/heyns1000/portal.git
+https://github.com/heyns1000/careers.git
+https://github.com/heyns1000/api.vault.seedwave.faa.zone.git
+https://github.com/heyns1000/toynest.seedwave.faa.zone.git
+https://github.com/heyns1000/menu.seewave.faa.zone.git
+https://github.com/heyns1000/banking.seedwave.faa.zone.git
+https://github.com/heyns1000/Wildbutcher.git
+https://github.com/heyns1000/payroll-mining.seedwave.faa.zone.git
+https://github.com/heyns1000/wildlife.seedwave.faa.zone.git
+https://github.com/heyns1000/shoshaloza.git
+https://github.com/heyns1000/quantum.seedwave.faa.zone.git
+https://github.com/heyns1000/fsf.seedwave.faa.zone.git
+https://github.com/heyns1000/faa-zone-admin-portal.git
+https://github.com/heyns1000/Fruitful-Phyton-backend.git
+https://github.com/heyns1000/Muller.faa.zone.git
+https://github.com/heyns1000/nutrition.seedwave.faa.zone.git
+https://github.com/heyns1000/logistics.seedwave.faa.zone.git
+https://github.com/heyns1000/justice.seedwave.faa.zone.git
+https://github.com/heyns1000/housing.seedwave.faa.zone.git
+https://github.com/heyns1000/education-youth.seedwave.faa.zone.git
+https://github.com/heyns1000/media-sonic.seedwave.faa.zone.git
+https://github.com/heyns1000/heyns1E3-seedwave.git
+https://github.com/heyns1000/seedwave_portal.git
+https://github.com/heyns1000/trompie.faa.zone.git
+https://github.com/heyns1000/admin-panel.seedwave.faa.zone.git
+https://github.com/heyns1000/professional.seedwave.faa.zone.git
+https://github.com/heyns1000/zerowaste.seedwave.faa.zone.git
+https://github.com/heyns1000/webless.seedwave.faa.zone.git
+https://github.com/heyns1000/voice.seedwave.faa.zone.git
+https://github.com/heyns1000/utilities.seedwave.faa.zone.git
+https://github.com/heyns1000/saas.seedwave.faa.zone.git
+https://github.com/heyns1000/packaging.seedwave.faa.zone.git
+https://github.com/heyns1000/media.seedwave.faa.zone.git
+https://github.com/heyns1000/micromesh.seedwave.faa.zone.git
+https://github.com/heyns1000/knowledge.seedwave.faa.zone.git
+https://github.com/heyns1000/health.seedwave.faa.zone.git
+https://github.com/heyns1000/gaming.seedwave.faa.zone.git
+https://github.com/heyns1000/fashion.seedwave.faa.zone.git
+https://github.com/heyns1000/creative.seedwave.faa.zone.git
+https://github.com/heyns1000/astrowind.git
+https://github.com/heyns1000/cloudflare-docs.git
+https://github.com/heyns1000/faa-vault-ui.git
+https://github.com/heyns1000/portfolio-responsive-complete.git
+EOF
+
+# Execute YOUR EXACT METHOD
+mkdir all-repos
+cd all-repos
+cat ../repos.txt | xargs -L1 git clone
+
+# Then open in VS Code
+cd ..
+code all-repos

@@ -1,0 +1,141 @@
+/**
+ * BUILDNEST ORCHESTRATOR - Phase 2 Production
+ * User: heyns1000 | Repo: codenest
+ * Handles: GitHub webhook → Build trigger → Status tracking
+ */
+
+export interface Env {
+   BUILDNEST_KV: KVNamespace;
+}
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    
+    // CORS headers for all responses
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
+    
+    // GitHub webhook endpoint
+    if (url.pathname === '/webhook' && request.method === 'POST') {
+      try {
+        const payload = await request.json() as any;
+        
+        if (payload.ref === 'refs/heads/main') {
+          const buildId = crypto.randomUUID();
+          const buildData = {
+            buildId,
+            repo: payload.repository.full_name,
+            commit: payload.after,
+            commitMessage: payload.head_commit?.message || 'No message',
+            pusher: payload.pusher?.name || 'unknown',
+            timestamp: new Date().toISOString(),
+            status: 'queued',
+            phase: 2
+          };
+          
+          // Store build in KV namespace
+await env.BUILDNEST_KV.put(`build:${buildId}`, JSON.stringify(buildData), 
+{
+  expirationTtl: 86400 * 30 // 30 days retention
+});
+console.log('Build triggered and stored in KV:', buildData);c
+#vv<
+          
+          return new Response(JSON.stringify({
+            success: true,
+            ...buildData
+          }), {
+            status: 200,
+            headers: corsHeaders
+          });
+        }
+        
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Not a main branch push'
+        }), {
+          status: 200,
+          headers: corsHeaders
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: (error as Error).message
+        }), {
+          status: 400,
+          headers: corsHeaders
+        });
+      }
+    }
+    
+    // Status endpoint
+    if (url.pathname === '/status') {
+      return new Response(JSON.stringify({
+        service: 'BuildNest Orchestrator',
+        user: 'heyns1000',
+        repo: 'codenest',
+        codenest_repos: 9,
+        phase: 2,
+        status: 'operational',
+        version: 'a693251d-c420-44f4-a04f-c202b44f1166',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+          webhook: '/webhook (POST)',
+          status: '/status (GET)',
+          health: '/health (GET)'
+        }
+      }), {
+        headers: corsHeaders
+      });
+    }
+    
+    // Health check
+    if (url.pathname === '/health') {
+      return new Response(JSON.stringify({
+        healthy: true,
+        uptime: 'operational',
+        timestamp: new Date().toISOString()
+      }), {
+        headers: corsHeaders
+      });
+    }
+    
+    // Root endpoint
+    return new Response(JSON.stringify({
+      service: 'BuildNest Orchestrator',
+      message: '🔥 PHASE 2 DEPLOYED - heyns1000/codenest 🔥',
+      user: 'heyns1000',
+      repo: 'https://github.com/heyns1000/codenest',
+      status: 'operational',
+      codenest_repos: 9,
+      integrated_systems: [
+        'HotStack (file orchestration)',
+        'BuildNest (chaos builds)',
+        'AI-Logic (intent processing)',
+        'VaultPay (payments)',
+        'Legal (compliance)',
+        'Footer.global.repo (shared components)',
+        'Noodle.juice (domain portal)',
+        'SamFox (portfolio)',
+        'Fruitfulglobal (sector hub)'
+      ],
+      endpoints: {
+        webhook: 'POST /webhook',
+        status: 'GET /status',
+        health: 'GET /health'
+      },
+      timestamp: new Date().toISOString()
+    }), {
+      headers: corsHeaders
+    });
+  }
+};
