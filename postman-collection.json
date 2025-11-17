@@ -1,0 +1,872 @@
+{
+  "info": {
+    "name": "NEXUS_NAIR API Collection",
+    "description": "Complete API collection for Fruitful Global Planet's VaultMesh ecosystem",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "value",
+        "value": "{{SUPABASE_ANON_KEY}}",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "apikey",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "SUPABASE_URL",
+      "value": "https://erwpnrnnvxchumusnthp.supabase.co",
+      "type": "string"
+    },
+    {
+      "key": "SUPABASE_ANON_KEY",
+      "value": "your-anon-key-here",
+      "type": "string"
+    },
+    {
+      "key": "AUTH_TOKEN",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "BareCart Commerce",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/products?select=*&order=created_at.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "created_at.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/products?item_id=eq.{{PRODUCT_ID}}&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "item_id",
+                  "value": "eq.{{PRODUCT_ID}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"VaultMesh Starter License\",\n  \"price\": 29.00,\n  \"quantity\": 100,\n  \"grains_per_unit\": 1\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/products",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product Quantity",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 95\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/products?item_id=eq.{{PRODUCT_ID}}",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "item_id",
+                  "value": "eq.{{PRODUCT_ID}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cart_id\": \"cart-abc123\",\n  \"customer_id\": \"customer@example.com\",\n  \"total_amount\": 58.00,\n  \"total_grains\": 2,\n  \"status\": \"completed\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/orders",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Orders by Customer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/orders?customer_id=eq.customer@example.com&select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "orders"],
+              "query": [
+                {
+                  "key": "customer_id",
+                  "value": "eq.customer@example.com"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/orders?order_id=eq.{{ORDER_ID}}&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "orders"],
+              "query": [
+                {
+                  "key": "order_id",
+                  "value": "eq.{{ORDER_ID}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment Processing",
+      "item": [
+        {
+          "name": "Create Payment Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{ORDER_ID}}\",\n  \"gateway\": \"paypal\",\n  \"amount\": 29.00,\n  \"currency\": \"ZAR\",\n  \"customer_email\": \"customer@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/payment_transactions",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "payment_transactions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Payment Transaction",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"gateway_transaction_id\": \"PAYPAL-12345-ABCDE\",\n  \"payment_data\": {\"payer_id\": \"PAYER-123\"},\n  \"completed_at\": \"{{$isoTimestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/payment_transactions?transaction_id=eq.{{TRANSACTION_ID}}",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "payment_transactions"],
+              "query": [
+                {
+                  "key": "transaction_id",
+                  "value": "eq.{{TRANSACTION_ID}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment by Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/payment_transactions?order_id=eq.{{ORDER_ID}}&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "payment_transactions"],
+              "query": [
+                {
+                  "key": "order_id",
+                  "value": "eq.{{ORDER_ID}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment by Gateway Transaction ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/payment_transactions?gateway_transaction_id=eq.PAYPAL-12345-ABCDE&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "payment_transactions"],
+              "query": [
+                {
+                  "key": "gateway_transaction_id",
+                  "value": "eq.PAYPAL-12345-ABCDE"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "License Management",
+      "item": [
+        {
+          "name": "Create License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"license_key\": \"ABCD-EFGH-JKLM-NPQR-STUW\",\n  \"order_id\": \"{{ORDER_ID}}\",\n  \"customer_email\": \"customer@example.com\",\n  \"customer_name\": \"John Doe\",\n  \"product_name\": \"VaultMesh Starter License\",\n  \"product_price\": 29.00,\n  \"payment_method\": \"paypal\",\n  \"payment_transaction_id\": \"PAYPAL-12345-ABCDE\",\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/licenses",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "licenses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Licenses by Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/licenses?customer_email=eq.customer@example.com&select=*&order=issued_at.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "licenses"],
+              "query": [
+                {
+                  "key": "customer_email",
+                  "value": "eq.customer@example.com"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "issued_at.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get License by Key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/licenses?license_key=eq.ABCD-EFGH-JKLM-NPQR-STUW&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "licenses"],
+              "query": [
+                {
+                  "key": "license_key",
+                  "value": "eq.ABCD-EFGH-JKLM-NPQR-STUW"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Increment Download Count",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"download_count\": 4,\n  \"last_downloaded_at\": \"{{$isoTimestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/licenses?license_id=eq.{{LICENSE_ID}}",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "licenses"],
+              "query": [
+                {
+                  "key": "license_id",
+                  "value": "eq.{{LICENSE_ID}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke License",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"revoked\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/licenses?license_id=eq.{{LICENSE_ID}}",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "licenses"],
+              "query": [
+                {
+                  "key": "license_id",
+                  "value": "eq.{{LICENSE_ID}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PulseTrade System",
+      "item": [
+        {
+          "name": "Create Trade",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_id\": \"user-123\",\n  \"to_id\": \"user-456\",\n  \"asset\": \"VaultMesh-License\",\n  \"amount\": 1,\n  \"pulse_number\": 192400000,\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/trades",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "trades"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Trade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/trades?trade_id=eq.{{TRADE_ID}}",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "trades"],
+              "query": [
+                {
+                  "key": "trade_id",
+                  "value": "eq.{{TRADE_ID}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Trades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/trades?status=eq.pending&select=*&order=pulse_number.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "trades"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "eq.pending"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "pulse_number.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trades by Pulse",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/trades?pulse_number=eq.192400000&select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "trades"],
+              "query": [
+                {
+                  "key": "pulse_number",
+                  "value": "eq.192400000"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Trades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/trades?or=(from_id.eq.user-123,to_id.eq.user-123)&select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "trades"],
+              "query": [
+                {
+                  "key": "or",
+                  "value": "(from_id.eq.user-123,to_id.eq.user-123)"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ClaimRoot Blockchain",
+      "item": [
+        {
+          "name": "Create Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"owner\": \"user-123\",\n  \"asset\": \"VaultMesh-License-ABCD\",\n  \"previous_hash\": null,\n  \"current_hash\": \"5d41402abc4b2a76b9719d911017c592af0d08e8ec0e6a6c8a3d2a1f3b4c5d6e\",\n  \"metadata\": {\n    \"license_key\": \"ABCD-EFGH-JKLM-NPQR-STUW\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/claims",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "claims"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/claims?select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "claims"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Claims by Owner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/claims?owner=eq.user-123&select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "claims"],
+              "query": [
+                {
+                  "key": "owner",
+                  "value": "eq.user-123"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Claims by Asset",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/claims?asset=eq.VaultMesh-License-ABCD&select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "claims"],
+              "query": [
+                {
+                  "key": "asset",
+                  "value": "eq.VaultMesh-License-ABCD"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Claim by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/claims?claim_id=eq.{{CLAIM_ID}}&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "claims"],
+              "query": [
+                {
+                  "key": "claim_id",
+                  "value": "eq.{{CLAIM_ID}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Care Loop",
+      "item": [
+        {
+          "name": "Get All Care Loop Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/care_loop_transactions?select=*&order=timestamp.desc",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "care_loop_transactions"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "*"
+                },
+                {
+                  "key": "order",
+                  "value": "timestamp.desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Care Loop by Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/care_loop_transactions?source_order_id=eq.{{ORDER_ID}}&select=*",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "care_loop_transactions"],
+              "query": [
+                {
+                  "key": "source_order_id",
+                  "value": "eq.{{ORDER_ID}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Care Loop Total Impact",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/rest/v1/care_loop_transactions?select=amount,animals_helped",
+              "host": ["{{SUPABASE_URL}}"],
+              "path": ["rest", "v1", "care_loop_transactions"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "amount,animals_helped"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

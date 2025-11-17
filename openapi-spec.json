@@ -1,0 +1,1395 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NEXUS_NAIR API",
+    "description": "Comprehensive API for Fruitful Global Planet's VaultMesh ecosystem featuring BareCart Commerce, PulseTrade, ClaimRoot, License Management, Care Loop, and more.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Fruitful Global Planet",
+      "email": "support@fruitfulglobalplanet.com"
+    },
+    "license": {
+      "name": "FAA-TREATY-OMNI-4321-A13XN",
+      "url": "https://fruitfulglobalplanet.com/treaty"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://erwpnrnnvxchumusnthp.supabase.co/rest/v1",
+      "description": "Production Supabase Server"
+    },
+    {
+      "url": "http://localhost:54321/rest/v1",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "BareCart",
+      "description": "Zero-waste commerce with grain-level precision"
+    },
+    {
+      "name": "Payment",
+      "description": "Payment processing with PayPal and PayFast"
+    },
+    {
+      "name": "License",
+      "description": "License key generation and management"
+    },
+    {
+      "name": "PulseTrade",
+      "description": "9-second pulse trading synchronization"
+    },
+    {
+      "name": "ClaimRoot",
+      "description": "Blockchain-style immutable claims"
+    },
+    {
+      "name": "VaultMesh",
+      "description": "DNA node network with atomic key generation"
+    },
+    {
+      "name": "Care Loop",
+      "description": "15% animal welfare allocation system"
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "tags": ["BareCart"],
+        "summary": "Get all products",
+        "description": "Retrieve all products in the catalog, sorted by creation date (newest first)",
+        "operationId": "getAllProducts",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                },
+                "example": [
+                  {
+                    "item_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "name": "VaultMesh Starter License",
+                    "price": 29.00,
+                    "quantity": 100,
+                    "grains_per_unit": 1,
+                    "created_at": "2025-11-14T10:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["BareCart"],
+        "summary": "Create product",
+        "description": "Create a new product in the catalog (requires authentication)",
+        "operationId": "createProduct",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              },
+              "example": {
+                "name": "VaultMesh Starter License",
+                "price": 29.00,
+                "quantity": 100,
+                "grains_per_unit": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/products?item_id=eq.{itemId}": {
+      "get": {
+        "tags": ["BareCart"],
+        "summary": "Get product by ID",
+        "description": "Retrieve a single product by its ID",
+        "operationId": "getProduct",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": ["BareCart"],
+        "summary": "Create order",
+        "description": "Create a new order with automatic Care Loop allocation (15%)",
+        "operationId": "createOrder",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              },
+              "example": {
+                "cart_id": "cart-abc123",
+                "customer_id": "customer@example.com",
+                "total_amount": 58.00,
+                "total_grains": 2,
+                "status": "completed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/orders?customer_id=eq.{customerId}": {
+      "get": {
+        "tags": ["BareCart"],
+        "summary": "Get orders by customer",
+        "description": "Retrieve all orders for a specific customer",
+        "operationId": "getOrdersByCustomer",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Customer identifier (email)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/payment_transactions": {
+      "post": {
+        "tags": ["Payment"],
+        "summary": "Create payment transaction",
+        "description": "Create a new payment transaction record",
+        "operationId": "createPaymentTransaction",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentTransactionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transaction created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentTransaction"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/licenses": {
+      "post": {
+        "tags": ["License"],
+        "summary": "Create license",
+        "description": "Generate and issue a new license key",
+        "operationId": "createLicense",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLicenseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "License created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/License"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/licenses?customer_email=eq.{email}": {
+      "get": {
+        "tags": ["License"],
+        "summary": "Get licenses by email",
+        "description": "Retrieve all licenses for a customer email",
+        "operationId": "getLicensesByEmail",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "Customer email address"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/License"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/licenses?license_key=eq.{licenseKey}": {
+      "get": {
+        "tags": ["License"],
+        "summary": "Get license by key",
+        "description": "Retrieve a license by its key",
+        "operationId": "getLicenseByKey",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "licenseKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$"
+            },
+            "description": "License key",
+            "example": "ABCD-EFGH-JKLM-NPQR-STUW"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/License"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/trades": {
+      "post": {
+        "tags": ["PulseTrade"],
+        "summary": "Create trade",
+        "description": "Create a new trade synchronized to current 9-second pulse",
+        "operationId": "createTrade",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTradeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Trade created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trade"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/trades?status=eq.pending": {
+      "get": {
+        "tags": ["PulseTrade"],
+        "summary": "Get pending trades",
+        "description": "Retrieve all trades with pending status",
+        "operationId": "getPendingTrades",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Trade"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/trades?pulse_number=eq.{pulseNumber}": {
+      "get": {
+        "tags": ["PulseTrade"],
+        "summary": "Get trades by pulse",
+        "description": "Retrieve all trades for a specific pulse cycle",
+        "operationId": "getTradesByPulse",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "pulseNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Pulse cycle number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Trade"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/claims": {
+      "get": {
+        "tags": ["ClaimRoot"],
+        "summary": "Get all claims",
+        "description": "Retrieve all claims (public access)",
+        "operationId": "getAllClaims",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Claim"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["ClaimRoot"],
+        "summary": "Create claim",
+        "description": "Create a new immutable ownership claim with blockchain-style hashing",
+        "operationId": "createClaim",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClaimRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Claim created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/claims?owner=eq.{owner}": {
+      "get": {
+        "tags": ["ClaimRoot"],
+        "summary": "Get claims by owner",
+        "description": "Retrieve all claims for a specific owner",
+        "operationId": "getClaimsByOwner",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Owner identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Claim"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/claims?asset=eq.{asset}": {
+      "get": {
+        "tags": ["ClaimRoot"],
+        "summary": "Get claims by asset",
+        "description": "Retrieve all claims for a specific asset",
+        "operationId": "getClaimsByAsset",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Claim"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/care_loop_transactions": {
+      "get": {
+        "tags": ["Care Loop"],
+        "summary": "Get all Care Loop transactions",
+        "description": "Retrieve all Care Loop transactions (public for transparency)",
+        "operationId": "getAllCareLoopTransactions",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CareLoopTransaction"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/care_loop_transactions?source_order_id=eq.{orderId}": {
+      "get": {
+        "tags": ["Care Loop"],
+        "summary": "Get Care Loop transaction by order",
+        "description": "Retrieve Care Loop transaction for a specific order",
+        "operationId": "getCareLoopByOrder",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Source order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareLoopTransaction"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey",
+        "description": "Supabase anonymous API key for public endpoints"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase JWT token for authenticated endpoints"
+      }
+    },
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "required": ["item_id", "name", "price", "quantity", "grains_per_unit", "created_at"],
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique product identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "description": "Product price in USD"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Available quantity"
+          },
+          "grains_per_unit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Grain count per unit for precise tracking"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Product creation timestamp"
+          }
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "required": ["name", "price", "quantity"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "grains_per_unit": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "required": ["order_id", "cart_id", "customer_id", "total_amount", "total_grains", "timestamp", "status"],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cart_id": {
+            "type": "string",
+            "description": "Cart or atomic key identifier"
+          },
+          "customer_id": {
+            "type": "string",
+            "description": "Customer identifier (email)"
+          },
+          "total_amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "description": "Total amount in USD (includes Care Loop 15%)"
+          },
+          "total_grains": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total grain count"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "completed", "cancelled", "refunded"]
+          }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "required": ["cart_id", "customer_id", "total_amount", "total_grains"],
+        "properties": {
+          "cart_id": {
+            "type": "string"
+          },
+          "customer_id": {
+            "type": "string"
+          },
+          "total_amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "total_grains": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "completed"],
+            "default": "completed"
+          }
+        }
+      },
+      "PaymentTransaction": {
+        "type": "object",
+        "required": ["transaction_id", "order_id", "gateway", "amount", "currency", "status", "customer_email", "created_at"],
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gateway": {
+            "type": "string",
+            "enum": ["paypal", "payfast"]
+          },
+          "gateway_transaction_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "default": "ZAR"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "completed", "failed", "refunded"]
+          },
+          "customer_email": {
+            "type": "string",
+            "format": "email"
+          },
+          "payment_data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "CreatePaymentTransactionRequest": {
+        "type": "object",
+        "required": ["order_id", "gateway", "amount", "customer_email"],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gateway": {
+            "type": "string",
+            "enum": ["paypal", "payfast"]
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "default": "ZAR"
+          },
+          "customer_email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "License": {
+        "type": "object",
+        "required": ["license_id", "license_key", "order_id", "customer_email", "customer_name", "product_name", "product_price", "payment_method", "status", "issued_at"],
+        "properties": {
+          "license_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "license_key": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$",
+            "example": "ABCD-EFGH-JKLM-NPQR-STUW"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customer_email": {
+            "type": "string",
+            "format": "email"
+          },
+          "customer_name": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "product_price": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": ["paypal", "payfast"]
+          },
+          "payment_transaction_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "revoked", "expired"]
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Null for lifetime licenses"
+          },
+          "download_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_downloaded_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "CreateLicenseRequest": {
+        "type": "object",
+        "required": ["order_id", "customer_email", "customer_name", "product_name", "product_price", "payment_method", "payment_transaction_id"],
+        "properties": {
+          "license_key": {
+            "type": "string",
+            "description": "Auto-generated if not provided"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customer_email": {
+            "type": "string",
+            "format": "email"
+          },
+          "customer_name": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "product_price": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": ["paypal", "payfast"]
+          },
+          "payment_transaction_id": {
+            "type": "string"
+          }
+        }
+      },
+      "Trade": {
+        "type": "object",
+        "required": ["trade_id", "from_id", "to_id", "asset", "amount", "pulse_number", "timestamp", "status"],
+        "properties": {
+          "trade_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from_id": {
+            "type": "string",
+            "description": "Sender identifier"
+          },
+          "to_id": {
+            "type": "string",
+            "description": "Recipient identifier"
+          },
+          "asset": {
+            "type": "string",
+            "description": "Asset being traded"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0.01
+          },
+          "pulse_number": {
+            "type": "integer",
+            "format": "int64",
+            "description": "9-second pulse cycle number"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "completed", "failed"]
+          }
+        }
+      },
+      "CreateTradeRequest": {
+        "type": "object",
+        "required": ["from_id", "to_id", "asset", "amount"],
+        "properties": {
+          "from_id": {
+            "type": "string"
+          },
+          "to_id": {
+            "type": "string"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0.01
+          }
+        }
+      },
+      "Claim": {
+        "type": "object",
+        "required": ["claim_id", "owner", "asset", "timestamp", "current_hash"],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner identifier"
+          },
+          "asset": {
+            "type": "string",
+            "description": "Asset being claimed"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "previous_hash": {
+            "type": "string",
+            "nullable": true,
+            "description": "SHA-256 hash of previous claim (null for first claim)"
+          },
+          "current_hash": {
+            "type": "string",
+            "description": "SHA-256 hash of this claim"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "default": {}
+          }
+        }
+      },
+      "CreateClaimRequest": {
+        "type": "object",
+        "required": ["owner", "asset"],
+        "properties": {
+          "owner": {
+            "type": "string"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "default": {}
+          }
+        }
+      },
+      "CareLoopTransaction": {
+        "type": "object",
+        "required": ["transaction_id", "amount", "beneficiary", "timestamp"],
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_order_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0.01,
+            "description": "15% of order total"
+          },
+          "beneficiary": {
+            "type": "string",
+            "default": "Banimals"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "animals_helped": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Estimated animals helped (amount / 12.5)"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional error details"
+          },
+          "hint": {
+            "type": "string",
+            "description": "Suggestion for fixing the error"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad Request - Invalid parameters or constraints violated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "Invalid parameters provided",
+              "code": "400"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized - Missing or invalid authentication",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "JWT expired",
+              "code": "PGRST301"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden - Insufficient permissions (RLS policy violation)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "permission denied for table",
+              "code": "PGRST302"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not Found - Resource does not exist",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "Resource not found",
+              "code": "404"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflict - Duplicate key or unique constraint violation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "duplicate key value violates unique constraint",
+              "code": "23505"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal Server Error - Unexpected server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "Internal server error",
+              "code": "500"
+            }
+          }
+        }
+      }
+    }
+  }
+}
