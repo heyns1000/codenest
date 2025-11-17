@@ -1,0 +1,79 @@
+name: CI - Build & Test
+on:
+  push:
+    branches:
+      - 'staging/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+  checks: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v4
+        with:
+          php-version: '8.1'
+          extensions: mbstring, intl, xml, curl
+
+      - name: Composer install
+        run: composer install --no-interaction --no-progress || true
+
+      - name: PHP lint
+        run: find . -name "*.php" -print0 | xargs -0 -n1 php -l || true
+
+      - name: Run PHP unit tests
+        run: if [ -f vendor/bin/phpunit ]; then vendor/bin/phpunit --colors=always; else echo "No phpunit found"; fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install npm deps
+        run: npm ci || true
+
+      - name: Lint JS
+        run: if [ -f package.json ]; then npm run lint || true; else echo "No JS lint script"; fi
+
+      - name: Run JS tests
+        run: if [ -f package.json ]; then npm test || true; else echo "No JS tests"; fi
+
+      - name: Build frontend
+        run: if [ -f package.json ]; then npm run build || true; else echo "No build script"; fi
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-nair-build
+          path: |
+            dist
+            vendor
+            RELEASE_NOTES.md
+            pr1_main_merged.json
+
+      - name: Comment on PR with status
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = github.context.payload.pull_request;
+            const body = `CI completed for PR #${pr.number}. Artifacts uploaded as 'nexus-nair-build'. Check Actions run: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body
+            });

@@ -1,0 +1,5 @@
+extends: "spectral:oas"
+
+rules:
+  # Turn off operationId requirement so teams can add operationIds incrementally
+  operation-operationId: off

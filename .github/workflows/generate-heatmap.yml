@@ -1,0 +1,48 @@
+name: Generate Repository Heatmap
+
+on:
+  # Allow manual trigger with custom owner input
+  workflow_dispatch:
+    inputs:
+      owner:
+        description: 'GitHub repository owner'
+        required: false
+        default: 'heyns1000'
+        type: string
+  
+  # Run daily at 02:00 UTC
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  generate-heatmap:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate heatmap
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ inputs.owner || 'heyns1000' }}
+        run: npm run generate-heatmap
+      
+      - name: Upload heatmap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: heatmap-${{ inputs.owner || 'heyns1000' }}
+          path: data/heatmap-${{ inputs.owner || 'heyns1000' }}.json
+          retention-days: 90

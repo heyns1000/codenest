@@ -1,0 +1,276 @@
+openapi: 3.0.3
+info:
+  title: Nexus Nair API
+  version: "1.0.0"
+  description: "Initial OpenAPI v3 specification scaffold for Nexus Nair. Add, update and expand paths as the API grows."
+servers:
+  - url: https://api.example.com
+    description: Production server (example)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    ErrorEnvelope:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Upper-snake error code (e.g. VALIDATION_FAILED)
+            message:
+              type: string
+            details:
+              description: Optional object or array with additional context
+              nullable: true
+            timestamp:
+              type: string
+              format: date-time
+            requestId:
+              type: string
+      required: [error]
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [email, password]
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        expiresIn:
+          type: integer
+        refreshToken:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+paths:
+  /auth/login:
+    post:
+      summary: Obtain access token
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  value:
+                    accessToken: "eyJhbGciOiJI..."
+                    tokenType: "Bearer"
+                    expiresIn: 3600
+                    refreshToken: "rfrsh_abc123"
+        '401':
+          description: invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /users/{id}:
+    get:
+      summary: Retrieve a user by id
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                example-1:
+                  value:
+                    id: "u_123"
+                    email: "user@example.com"
+                    name: "Alice"
+                    createdAt: "2025-11-14T12:00:00Z"
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /items:
+    get:
+      summary: List items with pagination
+      tags: [Items]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: list of items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Item'
+              examples:
+                page-1:
+                  value:
+                    meta: { page: 1, limit: 20, total: 2 }
+                    data:
+                      - id: "i_1"
+                        name: "Item 1"
+                        price: 9.99
+                        createdAt: "2025-11-10T10:00:00Z"
+                      - id: "i_2"
+                        name: "Item 2"
+                        price: 19.99
+                        createdAt: "2025-11-11T11:00:00Z"
+    post:
+      summary: Create a new item
+      tags: [Items]
+      security:
+        - bearerAuth: ["items:create"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+                price: { type: number }
+      responses:
+        '201':
+          description: created
+          headers:
+            Location:
+              description: URL of the created item
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              examples:
+                created:
+                  value:
+                    id: "i_123"
+                    name: "New Item"
+                    price: 9.99
+                    createdAt: "2025-11-14T13:00:00Z"
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /items/{id}:
+    delete:
+      summary: Delete an item
+      tags: [Items]
+      security:
+        - bearerAuth: ["admin"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: deleted
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
