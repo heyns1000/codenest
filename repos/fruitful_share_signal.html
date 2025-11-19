@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Fruitful™ Touch Master</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+  <style>
+    * { touch-action: manipulation; }
+    @keyframes glow { 0%,100% { box-shadow: 0 0 30px #00e5ff; } 50% { box-shadow: 0 0 60px #00e5ff; } }
+    .glow { animation: glow 1.8s infinite; }
+    .metrics { max-height: 0; overflow: hidden; transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    .metrics.open { max-height: 900px; }
+    .card { transition: transform 0.2s, box-shadow 0.2s; }
+    .card:active { transform: scale(0.95); }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(0, 229, 255, 0.4); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+  </style>
+</head>
+<body class="min-h-screen overscroll-none">
+
+  <!-- Sticky Header -->
+  <div class="sticky top-0 z-40 bg-black/95 backdrop-blur-lg border-b border-gray-800 px-4 py-5">
+    <h1 class="text-4xl font-black text-center bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+      🍇 Fruitful™
+    </h1>
+  </div>
+
+  <!-- Touch-Optimized Grid -->
+  <div id="grid" class="grid grid-cols-2 gap-4 p-4 
+                 sm:grid-cols-3 sm:gap-5 
+                 md:grid-cols-4 md:gap-6 
+                 lg:grid-cols-5 
+                 max-w-7xl mx-auto"></div>
+
+  <!-- Fullscreen Touch Modal -->
+  <div id="modal" class="hidden fixed inset-0 bg-black/98 flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-900 rounded-3xl p-8 w-full max-w-md border-4 border-cyan-400">
+      <h2 id="modalLabel" class="text-3xl font-bold text-cyan-400 text-center mb-6"></h2>
+      <p id="modalPrice" class="text-2xl text-center mb-8"></p>
+      <input id="shares" type="number" value="1000" class="w-full p-5 rounded-xl text-black text-3xl text-center mb-8"/>
+      <p id="total" class="text-4xl font-black text-green-400 text-center mb-10"></p>
+      <div class="grid grid-cols-2 gap-5">
+        <button onclick="closeModal()" class="bg-gray-700 hover:bg-gray-600 py-6 rounded-2xl text-xl font-bold">Cancel</button>
+        <button onclick="buy()" class="bg-gradient-to-r from-cyan-500 to-purple-600 hover:scale-110 py-6 rounded-2xl text-xl font-bold">BUY NOW</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const brands = [
+  { label: 'MyUniverse.ai', icon: '🧠', base: 17.39, color: '#00e5ff' },
+  { label: 'Vrugtige.Planet', icon: '🌸', base: 1.22, color: '#f06292' },
+  { label: 'VaultHearts', icon: '💖', base: 13.95, color: '#e91e63' },
+  { label: 'Zion Thread™', icon: '🪡', base: 6.61, color: '#5e35b1' },
+  { label: 'Omega Fleet', icon: '🛰️', base: 392.77, color: '#f4511e' },
+  { label: 'Hotstack Core UI', icon: '🔥', base: 1.00, color: '#ff3d00' },
+  { label: 'Tesla Corp', icon: '⚡', base: 238.73, color: '#e53935' },
+  { label: 'SpaceY', icon: '🚀', base: 872.13, color: '#43a047' },
+  // ... rest of your brands
+];
+
+let pulseHistory = {}, currentLabel = '', currentPrice = 0;
+
+const generate = (b) => Number((b + (Math.random()-0.5)*1.8).toFixed(2));
+const init = () => brands.forEach(b => pulseHistory[b.label] = Array(9).fill(b.base));
+const update = () => {
+  brands.forEach(b => {
+    pulseHistory[b.label].push(generate(b.base));
+    pulseHistory[b.label] = pulseHistory[b.label].slice(-9);
+  });
+  render();
+};
+
+const render = () => {
+  document.getElementById('grid').innerHTML = brands.map(b => {
+    const data = pulseHistory[b.label];
+    const latest = data[data.length-1];
+    const high = Math.max(...data), low = Math.min(...data);
+    const special = !['Tesla Corp','Nike Futures','SpaceY','Apple Vision'].includes(b.label);
+    const isMyUniverse = b.label === 'MyUniverse.ai';
+    const id = b.label.replace(/[^a-z]/gi,'');
+
+    return `
+      <div id="card-${id}" class="card relative overflow-hidden bg-gray-900 rounded-3xl p-5 border ${isMyUniverse?'border-cyan-400 glow':'border-gray-800'} hover:border-cyan-400">
+        <div class="text-5xl mb-2">${b.icon}</div>
+        <h3 class="text-lg font-bold truncate">${b.label}™</h3>
+        <p class="text-3xl font-black mt-3" style="color:${b.color}">R${latest.toFixed(2)}</p>
+        <canvas id="chart-${id}" class="w-full h-24 mt-4"></canvas>
+
+        <div class="flex gap-3 mt-4">
+          <button class="flex-1 bg-black hover:bg-gray-800 py-3 rounded-xl font-bold text-sm ripple-btn">BUY</button>
+          <button class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-xs metric-btn">METRICS</button>
+        </div>
+
+        ${isMyUniverse ? '<p class="text-xs text-red-400 animate-pulse mt-3 font-bold text-center">ANOMALY ACTIVE</p>' : ''}
+
+        <div class="metrics mt-4 text-xs space-y-1 bg-gray-800 p-4 rounded-xl">
+          <p>High: R${high.toFixed(2)} • Low: R${low.toFixed(2)}</p>
+          ${special ? `<p class="font-bold text-cyan-300">Valuation ≈ R${(latest*1e6).toLocaleString()}B</p><p class="text-xs">FAA + Fruitful: 49.8%</p>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Mini charts
+  brands.forEach(b => {
+    const ctx = document.getElementById(`chart-${b.label.replace(/[^a-z]/gi,'')}`)?.getContext('2d');
+    if (ctx) new Chart(ctx, { type: 'line', data: { datasets: [{ data: pulseHistory[b.label].map((p,i)=>({x:i,y:p})), borderColor: b.color, tension: 0.4, pointRadius: 0, borderWidth: 3 }] }, options: { scales: { x:{display:false}, y:{display:false} }, plugins: { legend:false, tooltip:false } } });
+  });
+
+  // === TOUCH GESTURES WITH HAMMER.JS ===
+  document.querySelectorAll('.card').forEach(card => {
+    const hammer = new Hammer(card);
+    const buyBtn = card.querySelector('.ripple-btn');
+    const metricBtn = card.querySelector('.metric-btn');
+    const metrics = card.querySelector('.metrics');
+
+    // Tap → Buy Modal
+    hammer.on('tap', () => openModal(card.querySelector('h3').textContent.replace('™',''), parseFloat(card.querySelector('p.text-3xl').textContent.slice(1))));
+
+    // Double tap → Toggle Metrics
+    hammer.on('doubletap', () => metrics.classList.toggle('open'));
+
+    // Long press (800ms) → Glow boost + haptic
+    hammer.on('press', () => {
+      card.classList.add('glow');
+      if (navigator.vibrate) navigator.vibrate(50);
+      setTimeout(() => card.classList.remove('glow'), 1000);
+    });
+
+    // Ripple effect on buy button
+    if (buyBtn) {
+      buyBtn.addEventListener('touchstart', e => {
+        const ripple = document.createElement('span');
+        const rect = buyBtn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.touches[0].clientX - rect.left - size/2;
+        const y = e.touches[0].clientY - rect.top - size/2;
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple');
+        buyBtn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    }
+  });
+};
+
+function openModal(label, price) {
+  currentLabel = label; currentPrice = price;
+  document.getElementById('modalLabel').textContent = label;
+  document.getElementById('modalPrice').textContent = `R${price.toFixed(2)} per share`;
+  document.getElementById('total').textContent = `R${(price*1000).toFixed(2)}`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+document.getElementById('shares')?.addEventListener('input', () => {
+  const shares = document.getElementById('shares').value || 1000;
+  document.getElementById('total').textContent = `R${(currentPrice*shares).toFixed(2)}`;
+});
+function buy() {
+  const shares = document.getElementById('shares').value;
+  alert(`BOUGHT ${shares} × ${currentLabel}\nTotal: R${(currentPrice*shares).toFixed(2)}`);
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  closeModal();
+}
+
+init();
+setInterval(update, 3000);
+
+console.log("Fruitful™ Touch Master – Swipe, Tap, Hold, Double-Tap, Haptic Feedback – LIVE");
+</script>
+</body>
+</html>
